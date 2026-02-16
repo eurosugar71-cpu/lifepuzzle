@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人生パズル百覧</title>
+
+<!-- Adobe Fonts -->
+<script>
+    (function(d) {
+      var config = {
+        kitId: 'kgc2rur',
+        scriptTimeout: 3000,
+        async: true
+      },
+      h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+    })(document);
+  </script>
+
+<link rel="stylesheet" href="https://use.typekit.net/xxxxxxx.css">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="hero">
+    <h1>人生パズル百覧</h1>
+    <img class="logo" src="img/LP_logo.png" alt="人生パズル ロゴ">
+    <p class="concept">
+        人生は偶然と選択の積み重ねで<br>
+            その選択は個性そのものです。<br>
+        あなたの人生パズルはどんな形ですか？<br>
+        ここにその個性的な形を紹介してください。<br>
+    </p>
+    
+</header>
+
+<section class="post-button-section">
+    <button id="openModal"><h3>投稿する</h3></button>
+</section>
+
+<section class="gallery">
+    <h2>みんなのパズル</h2>
+    <div id="postList" class="grid"></div>
+</section>
+
+<footer>
+    <a href="terms.html">利用規約</a>
+    <p>© 2026 nobody L.C.</p>
+</footer>
+
+<!-- 投稿モーダル -->
+<div id="postModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>写真を投稿</h2>
+    <form id="postForm">
+      <input type="file" id="imageInput" accept="image/*" required>
+      <select id="ageSelect" required>
+        <option value="">年齢を選択</option>
+        <option>10代</option><option>20代</option><option>30代</option>
+        <option>40代</option><option>50代</option><option>60代</option>
+        <option>70代</option><option>80代〜</option>
+      </select>
+      <select id="genderSelect" required>
+        <option value="">性別を選択</option>
+        <option>女性</option>
+        <option>男性</option>
+        <option>選択しない</option>
+      </select>
+      <button type="submit" class="submit-btn">投稿する</button>
+    </form>
+  </div>
+</div>
+
+<!-- 画像拡大モーダル -->
+<div id="imageModal" class="modal">
+  <div class="image-modal-content">
+    <span class="closeImage">&times;</span>
+    <img id="modalImage">
+  </div>
+</div>
+
+
+
+
+
+<!-- Firebase SDK -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+    
+    const firebaseConfig = {
+      apiKey: ""AIzaSyD3HYuNqt2wlip3GoXoo76QWfVnHZeqFfA",
+      authDomain: "lifepuzzle-6cc4b.firebaseapp.com",
+      projectId: "lifepuzzle-6cc4b",
+      storageBucket: "lifepuzzle-6cc4b.firebasestorage.app",
+      messagingSenderId: "23032274619",
+      appId: "1:23032274619:web:f2fb426b32501b8450139e"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+    
+    const form = document.getElementById("postForm");
+    const postList = document.getElementById("postList");
+    
+    async function loadPosts() {
+      postList.innerHTML = "";
+      const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+      const querySnapshot = await getDocs(q);
+    
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const postItem = document.createElement("div");
+        postItem.classList.add("post");
+        postItem.innerHTML = `
+          <img src="${data.imageUrl}" class="thumb">
+          <div class="meta">${data.age} / ${data.gender}</div>
+        `;
+        postList.appendChild(postItem);
+      });
+    }
+    
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+    
+      const file = document.getElementById("imageInput").files[0];
+      const age = document.getElementById("ageSelect").value;
+      const gender = document.getElementById("genderSelect").value;
+    
+      const storageRef = ref(storage, 'images/' + Date.now());
+      await uploadBytes(storageRef, file);
+      const imageUrl = await getDownloadURL(storageRef);
+    
+      await addDoc(collection(db, "posts"), {
+        imageUrl: imageUrl,
+        age: age,
+        gender: gender,
+        createdAt: new Date()
+      });
+    
+      loadPosts();
+      form.reset();
+      document.getElementById("postModal").style.display = "none";
+    });
+    
+    loadPosts();
+
+    // モーダル制御
+openModal.onclick = () => postModal.style.display = "flex";
+document.querySelector(".close").onclick = () => postModal.style.display = "none";
+document.querySelector(".closeImage").onclick = () => imageModal.style.display = "none";
+    </script>
+    
+</body>
+</html>
