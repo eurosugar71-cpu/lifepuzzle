@@ -29,7 +29,7 @@
         人生は偶然と選択の積み重ねで<br>
             その選択は個性そのものです。<br>
         あなたの人生パズルはどんな形ですか？<br>
-        ここにその個性的な形を紹介してください。<br>
+      その個性的な形を紹介してください。<br>
     </p>
     
 </header>
@@ -125,27 +125,34 @@
     }
     
     form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-    
-      const file = document.getElementById("imageInput").files[0];
-      const age = document.getElementById("ageSelect").value;
-      const gender = document.getElementById("genderSelect").value;
-    
-      const storageRef = ref(storage, 'images/' + Date.now());
-      await uploadBytes(storageRef, file);
-      const imageUrl = await getDownloadURL(storageRef);
-    
-      await addDoc(collection(db, "posts"), {
-        imageUrl: imageUrl,
-        age: age,
-        gender: gender,
-        createdAt: new Date()
-      });
-    
-      loadPosts();
-      form.reset();
-      document.getElementById("postModal").style.display = "none";
+  e.preventDefault();
+
+  try {
+    const file = document.getElementById("imageInput").files[0];
+    const age = document.getElementById("ageSelect").value;
+    const gender = document.getElementById("genderSelect").value;
+
+    const storageRef = ref(storage, 'images/' + Date.now());
+    await uploadBytes(storageRef, file);
+    const imageUrl = await getDownloadURL(storageRef);
+
+    await addDoc(collection(db, "posts"), {
+      imageUrl,
+      age,
+      gender,
+      createdAt: serverTimestamp()
     });
+
+    alert("投稿が完了しました！");
+    loadPosts();
+    form.reset();
+    postModal.style.display = "none";
+
+  } catch (error) {
+    console.error(error);
+    alert("エラーが発生しました");
+  }
+});
     
     loadPosts();
 
