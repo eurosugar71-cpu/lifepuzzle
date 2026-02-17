@@ -23,7 +23,7 @@ p {font-family: "togalite", sans-serif;
 
 button {
   background:#811c1c;
-  color:white;
+  color:#e4d8be;
   border:none;
   padding:14px 26px;
   border-radius:20px;
@@ -42,9 +42,8 @@ button {
 
 .gallery {
   text-align: center;
-  
 }
-}
+
 
 .grid {
   display:grid;
@@ -54,7 +53,7 @@ button {
 }
 
 .post {
-  background:white;
+  background:#e4d8be;
   border-radius:12px;
   overflow:hidden;
   box-shadow:0 4px 10px rgba(0,0,0,0.1);
@@ -79,19 +78,29 @@ button {
   background:rgba(0,0,0,0.6);
   justify-content:center;
   align-items:center;
+  color:#242f20;
 }
 
 .modal-content,
 .image-modal-content {
   background:white;
   padding:20px;
+  justify-content:space-around;
   border-radius:16px;
   width:90%;
-  max-width:400px;
+  max-width:380px;
+  line-height: 40px;
 }
 
 .image-modal-content img {
   width:100%;
+}
+
+.submit-btn {margin-left: 80px;}
+
+.rule { 
+  margin-left: 20px;
+  line-height: 40px;
 }
 
 footer {
