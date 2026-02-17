@@ -104,28 +104,30 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
     
-    const form = document.getElementById("postForm");
-    const postList = document.getElementById("postList");
-    
-    async function loadPosts() {
-      postList.innerHTML = "";
-      const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-      const querySnapshot = await getDocs(q);
-    
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const postItem = document.createElement("div");
-        postItem.classList.add("post");
-        postItem.innerHTML = `
-          <img src="${data.imageUrl}" class="thumb">
-          <div class="meta">${data.age} / ${data.gender}</div>
-        `;
-        postList.appendChild(postItem);
-      });
-    }
-    
-    form.addEventListener("submit", async (e) => {
+    // ===== DOM取得 =====
+const form = document.getElementById("postForm");
+const postList = document.getElementById("postList");
+const openModal = document.getElementById("openModal");
+const postModal = document.getElementById("postModal");
+const imageModal = document.getElementById("imageModal");
+
+// ===== モーダル制御 =====
+openModal.addEventListener("click", () => {
+  postModal.style.display = "flex";
+});
+
+document.querySelector(".close").addEventListener("click", () => {
+  postModal.style.display = "none";
+});
+
+document.querySelector(".closeImage").addEventListener("click", () => {
+  imageModal.style.display = "none";
+});
+
+// ===== 投稿処理 =====
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  console.log("submit発火");
 
   try {
     const file = document.getElementById("imageInput").files[0];
@@ -143,23 +145,16 @@
       createdAt: serverTimestamp()
     });
 
-    alert("投稿が完了しました！");
-    loadPosts();
+    alert("投稿完了！");
     form.reset();
     postModal.style.display = "none";
+    loadPosts();
 
   } catch (error) {
     console.error(error);
     alert("エラーが発生しました");
   }
 });
-    
-    loadPosts();
-
-    // モーダル制御
-openModal.onclick = () => postModal.style.display = "flex";
-document.querySelector(".close").onclick = () => postModal.style.display = "none";
-document.querySelector(".closeImage").onclick = () => imageModal.style.display = "none";
     </script>
     
 </body>
